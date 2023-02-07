@@ -1,0 +1,22 @@
+func main() {
+	r := gin.Default()
+
+	r.GET("/artists.json", func(c *gin.Context) {
+		resp, err := http.Get("https://groupietrackers.herokuapp.com/api/artists")
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		defer resp.Body.Close()
+
+		var artists []Artist
+		if err := json.NewDecoder(resp.Body).Decode(&artists); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		c.JSON(http.StatusOK, artists)
+	})
+
+	r.Run()
+}

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Music Site</title>
+</head>
+<body>
+	<header>
+		<h1>Music Site</h1>
+		<nav>
+			<ul>
+				<li><a href="#home">Home</a></li>
+				<li><a href="#artists">Artists</a></li>
+				<li><a href="#localisation">localisation</a></li>
+				<li><a href="#Aropos">A Propos/<a></li>
+				<li><a href="#Contact">Contact</a></li>
+			</ul>
+		</nav>
+	</header>
+	<main>
+		<section id="home">
+			<h2>Welcome to Music Site</h2>
+			<p>Here you can find information about your favorite artists, albums and concerts.</p>
+		</section>
+		<section id="artists">
+			
+	</main>
+	<script>
+		const searchForm = document.querySelector("#artists form:first-of-type");
+		const filterForm = document.querySelector("#artists form:last-of-type");
+		const tableBody = document.querySelector("#artists-table");
+		const artistDetails = document.querySelector("#artist-details");
+	
+		const renderArtists = (artists) => {
+			tableBody.innerHTML = "";
+			artists.forEach(artist => {
+				const row = document.createElement("tr");
+				row.innerHTML = `
+					<td>${artist.Name}</td>
+					<td>${artist.Genre}</td>
+					<td>${artist.Location}</td>
+				`;
+				tableBody.appendChild(row);
+			});
+		};
+	
+		const searchArtists = (searchTerm) => {
+			fetch(`http://localhost:8000/artists?search=${searchTerm}`)
+				.then(response => response.json())
+				.then(artists => renderArtists(artists));
+		};
+	
+		const filterArtists = (selectedGenre) => {
+			fetch(`http://localhost:8000/artists?genre=${selectedGenre}`)
+				.then(response => response.json())
+				.then(artists => renderArtists(artists));
+		};
+	
+		const showArtistDetails = (artistName) => {
+			fetch(`http://localhost:8000/artists/${artistName}`)
+				.then(response => response.json())
+				.then(artist => {
+					artistDetails.innerHTML = `
+						<h2>${artist.Name}</h2>
+						<p>Genre: ${artist.Genre}</p>
+						<p>Location: ${artist.Location}</p>
+						<p>Bio: ${artist.Bio}</p>
+					`;
+				});
+		};
+	
+		searchForm.addEventListener("submit", e => {
+			e.preventDefault();
+			const searchTerm = searchForm.querySelector("input").value;
+			searchArtists(searchTerm);
+		});
+	
+		filterForm.addEventListener("submit", e => {
+			e.preventDefault();
+			const selectedGenre = filterForm.querySelector("select").value;
+			filterArtists(selectedGenre);
+		});
+	
+		tableBody.addEventListener("click", e => {
+			const target = e.target;
+			if (target.tagName === "TD") {
+				const artistName = target.parentNode.querySelector("td:first-of-type").textContent;
+				showArtistDetails(artistName);
+			}
+		});
+	</script>
+	
+</body>
+</html>

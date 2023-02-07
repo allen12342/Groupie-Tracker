@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" type="text/css" href="locations.css">
+  <title>Localisations</title>
+</head>
+<body>
+  <table>
+    <caption>Liste des localisations</caption>
+    <tr>
+      <th>Nom</th>
+      <th>Localisation</th>
+      <th>Capacité</th>
+    </tr>
+    {{range .}}
+    <tr>
+      <td>{{.Name}}</td>
+      <td>{{.Location}}</td>
+      <td>{{.Capacity}}</td>
+    </tr>
+    {{end}}
+  </table>
+</body>
+</html>

@@ -1,0 +1,63 @@
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"net/http"
+)
+
+type Artist struct {
+	Name  string `json:"name"`
+	Genre string `json:"genre"`
+}
+
+type Group struct {
+	Name    string   `json:"name"`
+	Members []Artist `json:"members"`
+}
+
+type Venue struct {
+	Name      string `json:"name"`
+	Location  string `json:"location"`
+	Capacity  int    `json:"capacity"`
+	Available bool   `json:"available"`
+}
+
+type Album struct {
+	Title  string `json:"title"`
+	Artist string `json:"artist"`
+	Year   int    `json:"year"`
+}
+
+type Event struct {
+	Name     string   `json:"name"`
+	Date     string   `json:"date"`
+	Location Venue    `json:"location"`
+	Artists  []Artist `json:"artists"`
+}
+
+var events []Event
+
+func main() {
+	http.HandleFunc("/events", handleEvents)
+	fmt.Println("Serving on http://localhost:8080")
+	err := http.ListenAndServe(":8080", nil)
+	if err != nil {
+		fmt.Println(err)
+	}
+}
+
+func handleEvents(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "GET":
+		eventsJSON, err := json.Marshal(events)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(eventsJSON)
+	default:
+		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+	}
+}
